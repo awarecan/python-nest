@@ -227,6 +227,11 @@ def main():
             pin = input("PIN: ")
             napi.request_token(pin)
 
+        if not cmd:
+            print("Please provide one of the valid commands, call with -h "
+                  "to show usage")
+            return 
+        
         if cmd.startswith("camera"):
             return handle_camera_commands(napi, args)
         elif cmd == 'away':
