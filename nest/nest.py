@@ -1753,7 +1753,7 @@ class Nest(object):
     def _start_event_loop(self, events, queue, ready_event, update_event):
         for event in events:
             event_type = event.event
-            if event_type == 'open':
+            if event_type == 'open' or event_type == 'keep-alive':
                 pass
             elif event_type == 'put':
                 queue.appendleft(json.loads(event.data))
@@ -1763,8 +1763,6 @@ class Nest(object):
                                          msg='Auth token has been revoked')
             elif event_type == 'error':
                 raise APIError(None, msg=event.data)
-            elif event_type == 'keep-alive':
-                update_event.set()
 
             if not ready_event.is_set():
                 ready_event.set()
