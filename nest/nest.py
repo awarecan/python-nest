@@ -4,11 +4,11 @@ import collections
 import copy
 import datetime
 import hashlib
+import threading
 import time
 import os
 import uuid
 import weakref
-import threading
 
 from dateutil.parser import parse as parse_time
 
@@ -1331,6 +1331,9 @@ class Camera(Device):
         else:
             return SIMULATOR_SNAPSHOT_PLACEHOLDER_URL
 
+    @property
+    def web_url(self):
+        return self._device.get('web_url')
 
 class Structure(NestBase):
     @property
@@ -1568,6 +1571,8 @@ class Nest(object):
         self._staff = False
         self._superuser = False
         self._email = None
+        self._stream = None
+        self._update_event = threading.Event()
 
 #        self._cache_ttl = cache_ttl
 #        self._cache = (None, 0)
@@ -1596,6 +1601,10 @@ class Nest(object):
                         access_token_cache_file=access_token_cache_file,
                         auth_callback=auth_callback)
         self._session.auth = auth
+
+    @property
+    def update_event(self):
+        return self._update_event
 
     @property
     def authorization_required(self):
@@ -1730,25 +1739,30 @@ class Nest(object):
 
         ready_event = threading.Event()
         self._queue = collections.deque(maxlen=2)
+
         event_thread = threading.Thread(target=self._start_event_loop,
                                         args=(client.events(),
-                                              self._queue, ready_event))
+                                              self._queue, ready_event, self._update_event))
         event_thread.setDaemon(True)
         event_thread.start()
+        self._stream = event_thread
         ready_event.wait(timeout=10)
 
-    def _start_event_loop(self, events, queue, ready_event):
+    def _start_event_loop(self, events, queue, ready_event, update_event):
         for event in events:
             event_type = event.event
             if event_type == 'open':
                 pass
             elif event_type == 'put':
                 queue.appendleft(json.loads(event.data))
+                update_event.set()
             elif event_type == 'auth_revoked':
                 raise AuthorizationError(None,
                                          msg='Auth token has been revoked')
             elif event_type == 'error':
                 raise APIError(None, msg=event.data)
+            elif event_type == 'keep-alive':
+                update_event.set()
 
             if not ready_event.is_set():
                 ready_event.set()
