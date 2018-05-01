@@ -148,10 +148,10 @@ def get_device(napi, args, structure):
         return structure.cameras[args.index]
 
 
-def handle_camera_show(device, count = 0):
-    if count == 0 :
+def handle_camera_show(device, count=0):
+    if count == 0:
         print('Device                : %s' % device.name)
-        # print('Model               : %s' % device.model) # Doesn't seem to work
+        # print('Model               : %s' % device.model) # Doesn't work
         print('Serial                : %s' % device.serial)
         print('Where                 : %s' % device.where)
         print('Where ID              : %s' % device.where_id)
@@ -167,6 +167,7 @@ def handle_camera_show(device, count = 0):
     print('Snapshot URL          : %s' % device.snapshot_url)
     print('Nest Web App URL      : %s' % device.web_url)
     print('Press Ctrl+C to EXIT')
+
 
 def handle_camera_streaming(device, args):
     if args.disable_camera_streaming:
@@ -191,7 +192,7 @@ def handle_camera_commands(napi, args):
         handle_camera_streaming(device, args)
 
 
-def handle_show_commands(napi, device, display_temp, count = 0):
+def handle_show_commands(napi, device, display_temp, count=0):
     if count == 0:
         # TODO should pad key? old code put : out 35
         print('Device: %s' % device.name)
@@ -212,7 +213,7 @@ def handle_show_commands(napi, device, display_temp, count = 0):
     if device.has_hot_water_control:
         print('Hot Water Temp        : %s' % device.fan)
     print('Temp                  : %0.1f%s' % (device.temperature,
-            device.temperature_scale))
+          device.temperature_scale))
     helpers.print_if('Humidity              : %0.1f%%', device.humidity)
     if isinstance(device.target, tuple):
         print('Target                 : %0.1f-%0.1f%s' % (
@@ -221,13 +222,13 @@ def handle_show_commands(napi, device, display_temp, count = 0):
             device.temperature_scale))
     else:
         print('Target                : %0.1f%s' %
-                (display_temp(device.target), device.temperature_scale))
+              (display_temp(device.target), device.temperature_scale))
 
     helpers.print_if('Away Heat             : %0.1fC',
-                        device.eco_temperature[0])
+                     device.eco_temperature[0])
 
     helpers.print_if('Away Cool             : %0.1fC',
-                        device.eco_temperature[1])
+                     device.eco_temperature[1])
 
     print('Has Leaf              : %s' % device.has_leaf)
 
@@ -281,8 +282,8 @@ def main():
         if not cmd:
             print("Please provide one of the valid commands, call with -h "
                   "to show usage")
-            return 
-        
+            return
+
         if cmd.startswith("camera"):
             return handle_camera_commands(napi, args)
         elif cmd == 'away':

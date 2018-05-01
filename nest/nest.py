@@ -1335,6 +1335,7 @@ class Camera(Device):
     def web_url(self):
         return self._device.get('web_url')
 
+
 class Structure(NestBase):
     @property
     def _structure(self):
@@ -1742,7 +1743,8 @@ class Nest(object):
 
         event_thread = threading.Thread(target=self._start_event_loop,
                                         args=(client.events(),
-                                              self._queue, ready_event, self._update_event))
+                                              self._queue, ready_event,
+                                              self._update_event))
         event_thread.setDaemon(True)
         event_thread.start()
         self._stream = event_thread
