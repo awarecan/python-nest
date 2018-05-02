@@ -55,6 +55,11 @@ def parse_args():
     parser.add_argument('--client-secret', dest='client_secret',
                         help='product secret for nest.com', metavar='SECRET')
 
+    parser.add_argument('-k', '--keep-alive', dest='keep_alive',
+                        action='store_true',
+                        help='keep showing update received from stream API '
+                             'in show and camera-show commands')
+
     parser.add_argument('-c', '--celsius', dest='celsius', action='store_true',
                         help='use celsius instead of farenheit')
 
@@ -149,7 +154,7 @@ def get_device(napi, args, structure):
 
 
 def handle_camera_show(device, count=0):
-    if count == 0:
+    if count <= 0:
         print('Device                : %s' % device.name)
         # print('Model               : %s' % device.model) # Doesn't work
         print('Serial                : %s' % device.serial)
@@ -165,7 +170,8 @@ def handle_camera_show(device, count=0):
     print('Audio Enabled         : %s' % device.is_audio_enabled)
     print('Public Share Enabled  : %s' % device.is_public_share_enabled)
     print('Snapshot URL          : %s' % device.snapshot_url)
-    print('Press Ctrl+C to EXIT')
+    if count >= 0:
+        print('Press Ctrl+C to EXIT')
 
 
 def handle_camera_streaming(device, args):
@@ -181,18 +187,20 @@ def handle_camera_commands(napi, args):
     structure = get_structure(napi, args)
     device = get_device(napi, args, structure)
     if args.command == "camera-show":
-        count = 0
-        while napi.update_event.wait():
-            napi.update_event.clear()
-            handle_camera_show(device, count)
-            count = count + 1
-
+        if args.keep_alive:
+            count = 0
+            while napi.update_event.wait():
+                napi.update_event.clear()
+                handle_camera_show(device, count)
+                count = count + 1
+        else:
+            handle_camera_show(device, -1)
     elif args.command == "camera-streaming":
         handle_camera_streaming(device, args)
 
 
 def handle_show_commands(napi, device, display_temp, count=0):
-    if count == 0:
+    if count <= 0:
         # TODO should pad key? old code put : out 35
         print('Device: %s' % device.name)
         print('Where: %s' % device.where)
@@ -231,7 +239,8 @@ def handle_show_commands(napi, device, display_temp, count=0):
 
     print('Has Leaf              : %s' % device.has_leaf)
 
-    print('Press Ctrl+C to EXIT')
+    if count >= 0:
+        print('Press Ctrl+C to EXIT')
 
 
 def main():
@@ -385,11 +394,14 @@ def main():
                 print('%0.1f' % display_temp(target))
 
         elif cmd == 'show':
-            count = 0
-            while napi.update_event.wait():
-                napi.update_event.clear()
-                handle_show_commands(napi, device, display_temp, count)
-                count = count + 1
+            if args.keep_alive:
+                count = 0
+                while napi.update_event.wait():
+                    napi.update_event.clear()
+                    handle_show_commands(napi, device, display_temp, count)
+                    count = count + 1
+            else:
+                    handle_show_commands(napi, device, display_temp, -1)
 
 
 if __name__ == '__main__':
