@@ -189,6 +189,7 @@ def handle_camera_commands(napi, args):
     if args.command == "camera-show":
         handle_camera_show(device, args.keep_alive)
         if args.keep_alive:
+            napi.update_event.clear()
             while napi.update_event.wait():
                 napi.update_event.clear()
                 handle_camera_show(device, True, False)
@@ -229,11 +230,10 @@ def handle_show_commands(napi, device, display_temp, print_prompt,
         print('Target                : %0.1f%s' %
               (display_temp(device.target), device.temperature_scale))
 
-    helpers.print_if('Away Heat             : %0.1fC',
-                     device.eco_temperature[0])
-
-    helpers.print_if('Away Cool             : %0.1fC',
-                     device.eco_temperature[1])
+    print('Away Heat             : %0.1f%s' %
+          (display_temp(device.eco_temperature[0]), device.temperature_scale))
+    print('Away Cool             : %0.1f%s' %
+          (display_temp(device.eco_temperature[1]), device.temperature_scale))
 
     print('Has Leaf              : %s' % device.has_leaf)
 
@@ -394,6 +394,7 @@ def main():
         elif cmd == 'show':
             handle_show_commands(napi, device, display_temp, args.keep_alive)
             if args.keep_alive:
+                napi.update_event.clear()
                 while napi.update_event.wait():
                     napi.update_event.clear()
                     handle_show_commands(napi, device, display_temp,
