@@ -1331,10 +1331,6 @@ class Camera(Device):
         else:
             return SIMULATOR_SNAPSHOT_PLACEHOLDER_URL
 
-    @property
-    def web_url(self):
-        return self._device.get('web_url')
-
 
 class Structure(NestBase):
     @property
@@ -1572,7 +1568,7 @@ class Nest(object):
         self._staff = False
         self._superuser = False
         self._email = None
-        self._stream = None
+        self._event_thread = None
         self._update_event = threading.Event()
 
 #        self._cache_ttl = cache_ttl
@@ -1741,13 +1737,13 @@ class Nest(object):
         ready_event = threading.Event()
         self._queue = collections.deque(maxlen=2)
 
-        event_thread = threading.Thread(target=self._start_event_loop,
-                                        args=(client.events(),
-                                              self._queue, ready_event,
-                                              self._update_event))
-        event_thread.setDaemon(True)
-        event_thread.start()
-        self._stream = event_thread
+        self._event_thread = threading.Thread(target=self._start_event_loop,
+                                              args=(client.events(),
+                                                    self._queue,
+                                                    ready_event,
+                                                    self._update_event))
+        self._event_thread.setDaemon(True)
+        self._event_thread.start()
         ready_event.wait(timeout=10)
 
     def _start_event_loop(self, events, queue, ready_event, update_event):

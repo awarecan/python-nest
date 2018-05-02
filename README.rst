@@ -230,8 +230,8 @@ A configuration file must be specified and used for the credentials to communica
 .. code-block:: ini
 
     [NEST]
-    client_id = yourclientid
-    client-secret = neverask
+    user = joe@user.com
+    password = swordfish
     token_cache = ~/.config/nest/token_cache
 
 
