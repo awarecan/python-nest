@@ -165,7 +165,6 @@ def handle_camera_show(device, count=0):
     print('Audio Enabled         : %s' % device.is_audio_enabled)
     print('Public Share Enabled  : %s' % device.is_public_share_enabled)
     print('Snapshot URL          : %s' % device.snapshot_url)
-    print('Nest Web App URL      : %s' % device.web_url)
     print('Press Ctrl+C to EXIT')
 
 
