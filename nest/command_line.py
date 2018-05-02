@@ -153,24 +153,24 @@ def get_device(napi, args, structure):
         return structure.cameras[args.index]
 
 
-def handle_camera_show(device, count=0):
-    if count <= 0:
+def handle_camera_show(device, print_prompt, print_meta_data=True):
+    if print_meta_data:
         print('Device                : %s' % device.name)
         # print('Model               : %s' % device.model) # Doesn't work
         print('Serial                : %s' % device.serial)
         print('Where                 : %s' % device.where)
         print('Where ID              : %s' % device.where_id)
+        print('Video History Enabled : %s' % device.is_video_history_enabled)
+        print('Audio Enabled         : %s' % device.is_audio_enabled)
+        print('Public Share Enabled  : %s' % device.is_public_share_enabled)
+        print('Snapshot URL          : %s' % device.snapshot_url)
 
     print('Away                  : %s' % device.structure.away)
     print('Sound Detected        : %s' % device.sound_detected)
     print('Motion Detected       : %s' % device.motion_detected)
     print('Person Detected       : %s' % device.person_detected)
     print('Streaming             : %s' % device.is_streaming)
-    print('Video History Enabled : %s' % device.is_video_history_enabled)
-    print('Audio Enabled         : %s' % device.is_audio_enabled)
-    print('Public Share Enabled  : %s' % device.is_public_share_enabled)
-    print('Snapshot URL          : %s' % device.snapshot_url)
-    if count >= 0:
+    if print_prompt:
         print('Press Ctrl+C to EXIT')
 
 
@@ -187,20 +187,18 @@ def handle_camera_commands(napi, args):
     structure = get_structure(napi, args)
     device = get_device(napi, args, structure)
     if args.command == "camera-show":
+        handle_camera_show(device, args.keep_alive)
         if args.keep_alive:
-            count = 0
             while napi.update_event.wait():
                 napi.update_event.clear()
-                handle_camera_show(device, count)
-                count = count + 1
-        else:
-            handle_camera_show(device, -1)
+                handle_camera_show(device, True, False)
     elif args.command == "camera-streaming":
         handle_camera_streaming(device, args)
 
 
-def handle_show_commands(napi, device, display_temp, count=0):
-    if count <= 0:
+def handle_show_commands(napi, device, display_temp, print_prompt,
+                         print_meta_data=True):
+    if print_meta_data:
         # TODO should pad key? old code put : out 35
         print('Device: %s' % device.name)
         print('Where: %s' % device.where)
@@ -239,7 +237,7 @@ def handle_show_commands(napi, device, display_temp, count=0):
 
     print('Has Leaf              : %s' % device.has_leaf)
 
-    if count >= 0:
+    if print_prompt:
         print('Press Ctrl+C to EXIT')
 
 
@@ -394,14 +392,12 @@ def main():
                 print('%0.1f' % display_temp(target))
 
         elif cmd == 'show':
+            handle_show_commands(napi, device, display_temp, args.keep_alive)
             if args.keep_alive:
-                count = 0
                 while napi.update_event.wait():
                     napi.update_event.clear()
-                    handle_show_commands(napi, device, display_temp, count)
-                    count = count + 1
-            else:
-                    handle_show_commands(napi, device, display_temp, -1)
+                    handle_show_commands(napi, device, display_temp,
+                                         True, False)
 
 
 if __name__ == '__main__':
