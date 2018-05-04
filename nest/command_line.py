@@ -196,7 +196,6 @@ def handle_camera_commands(napi, args):
                     handle_camera_show(device, True, False)
             except KeyboardInterrupt:
                 return
-                
     elif args.command == "camera-streaming":
         handle_camera_streaming(device, args)
 
