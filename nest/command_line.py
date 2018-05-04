@@ -189,10 +189,14 @@ def handle_camera_commands(napi, args):
     if args.command == "camera-show":
         handle_camera_show(device, args.keep_alive)
         if args.keep_alive:
-            napi.update_event.clear()
-            while napi.update_event.wait():
+            try:
                 napi.update_event.clear()
-                handle_camera_show(device, True, False)
+                while napi.update_event.wait():
+                    napi.update_event.clear()
+                    handle_camera_show(device, True, False)
+            except KeyboardInterrupt:
+                return
+                
     elif args.command == "camera-streaming":
         handle_camera_streaming(device, args)
 
@@ -394,11 +398,14 @@ def main():
         elif cmd == 'show':
             handle_show_commands(napi, device, display_temp, args.keep_alive)
             if args.keep_alive:
-                napi.update_event.clear()
-                while napi.update_event.wait():
+                try:
                     napi.update_event.clear()
-                    handle_show_commands(napi, device, display_temp,
-                                         True, False)
+                    while napi.update_event.wait():
+                        napi.update_event.clear()
+                        handle_show_commands(napi, device, display_temp,
+                                             True, False)
+                except KeyboardInterrupt:
+                    return
 
 
 if __name__ == '__main__':
