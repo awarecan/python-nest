@@ -1502,6 +1502,12 @@ class Structure(NestBase):
             return parse_time(self._structure['eta_begin'])
 
     def set_eta(self, trip_id, eta_begin, eta_end):
+        if not eta_begin:
+            raise ValueError("eta_begin must be not None")
+        if not trip_id:
+            trip_id = "trip_{}".format(datetime.datetime.now().isoformat())
+        if not eta_end:
+            eta_end = eta_begin
         data = {'trip_id': trip_id,
                 'estimated_arrival_window_begin': eta_begin.isoformat(),
                 'estimated_arrival_window_end': eta_end.isoformat()}

@@ -321,6 +321,8 @@ def main():
 
             if args.away:
                 structure.away = True
+                if args.eta_begin:
+                    structure.set_eta(args.trip_id, args.eta_begin, args.eta_end)
 
             elif args.home:
                 structure.away = False
