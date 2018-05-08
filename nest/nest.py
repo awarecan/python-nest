@@ -1501,13 +1501,19 @@ class Structure(NestBase):
         if 'eta_begin' in self._structure:
             return parse_time(self._structure['eta_begin'])
 
+    def set_eta(self, trip_id, eta_begin, eta_end):
+        data = {'trip_id': trip_id,
+                'estimated_arrival_window_begin': eta_begin.isoformat(),
+                'estimated_arrival_window_end': eta_end.isoformat()}
+        self._set('structures', {'eta': data})
+
     @property
     def wheres(self):
         return self._structure['wheres']
 
     @wheres.setter
     def wheres(self, value):
-        self._set('where', {'wheres': value})
+        self._set('structures', {'wheres': value})
 
     def add_where(self, name, ident=None):
         name = name.lower()

@@ -106,6 +106,12 @@ def parse_args():
     away_group = away.add_mutually_exclusive_group()
     away_group.add_argument('--away', action='store_true', default=False,
                             help='set away status to "away"')
+    away_group.add_argument('--trip', dest='trip_id',
+                            help='eta information')
+    away_group.add_argument('--eta-begin', dest='eta_begin',
+                            help='estimated arrival window begin')
+    away_group.add_argument('--eta-end', dest='eta_end',
+                            help='estimated arrival window end')
     away_group.add_argument('--home', action='store_true', default=False,
                             help='set away status to "home"')
 

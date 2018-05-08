@@ -18,6 +18,8 @@ develop-eggs
 lib
 lib64
 __pycache__
+share
+pyvenv.cfg
 
 # Installer logs
 pip-log.txt
@@ -38,4 +40,7 @@ nosetests.xml
 MANIFEST
 
 # PyCharm
-.idea/*
+.idea
+
+# VS Code
+.vscode
