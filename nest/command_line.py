@@ -11,6 +11,7 @@ import argparse
 import os
 import sys
 import errno
+from datetime import datetime, timedelta
 
 from . import nest
 from . import utils
@@ -106,14 +107,13 @@ def parse_args():
     away_group = away.add_mutually_exclusive_group()
     away_group.add_argument('--away', action='store_true', default=False,
                             help='set away status to "away"')
-    away_group.add_argument('--trip', dest='trip_id',
-                            help='eta information')
-    away_group.add_argument('--eta-begin', dest='eta_begin',
-                            help='estimated arrival window begin')
-    away_group.add_argument('--eta-end', dest='eta_end',
-                            help='estimated arrival window end')
     away_group.add_argument('--home', action='store_true', default=False,
                             help='set away status to "home"')
+    eta_group = away.add_argument_group()
+    eta_group.add_argument('--trip', dest='trip_id',
+                           help='eta information')
+    eta_group.add_argument('--eta', dest='eta', type=int,
+                           help='estimated arrival time from now, in mintues')
 
     subparsers.add_parser('target', help='show current temp target')
     subparsers.add_parser('humid', help='show current humidity')
@@ -321,8 +321,9 @@ def main():
 
             if args.away:
                 structure.away = True
-                if args.eta_begin:
-                    structure.set_eta(args.trip_id, args.eta_begin, args.eta_end)
+                if args.eta:
+                    eta = datetime.utcnow() + timedelta(minutes=args.eta)
+                    structure.set_eta(args.trip_id, eta, eta)
 
             elif args.home:
                 structure.away = False
