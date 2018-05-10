@@ -1503,9 +1503,9 @@ class Structure(NestBase):
 
     def set_eta(self, trip_id, eta_begin, eta_end):
         if not eta_begin:
-            raise ValueError("eta_begin must be not None")
+            raise ValueError("eta_begin must have value")
         if not trip_id:
-            trip_id = "trip_{}".format(datetime.datetime.now().isoformat())
+            trip_id = "trip_{}".format(eta_begin.isoformat())
         if not eta_end:
             eta_end = eta_begin
         data = {'trip_id': trip_id,
@@ -1519,7 +1519,7 @@ class Structure(NestBase):
 
     @wheres.setter
     def wheres(self, value):
-        self._set('structures', {'wheres': value})
+        self._set('where', {'wheres': value})
 
     def add_where(self, name, ident=None):
         name = name.lower()
