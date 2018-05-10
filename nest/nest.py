@@ -229,6 +229,9 @@ class Device(NestBase):
 
         return self.where
 
+    def __str__(self):
+        return str(self._device)
+
     @property
     def name(self):
         return self._device.get('name')
@@ -1326,6 +1329,9 @@ class Structure(NestBase):
     def _structure(self):
         return self._nest_api._status[STRUCTURES][self._serial]
 
+    def __str__(self):
+        return str(self._structure)
+
     def _set_away(self, value, auto_away=False):
         self._set('structures', {'away': AWAY_MAP[value]})
 
@@ -1551,6 +1557,12 @@ class Structure(NestBase):
 
         self.wheres = wheres
         return ident
+
+    @property
+    def security_state(self):
+        '''Return "ok" or "deter". Need sercurity state ready permission'''
+        if 'wwn_security_state' in self._structure:
+            return self._structure['wwn_security_state']
 
 
 class Nest(object):
