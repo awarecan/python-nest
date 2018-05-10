@@ -1560,7 +1560,7 @@ class Structure(NestBase):
 
     @property
     def security_state(self):
-        '''Return "ok" or "deter". Need sercurity state ready permission'''
+        """Return 'ok' or 'deter'. Need sercurity state ready permission"""
         if 'wwn_security_state' in self._structure:
             return self._structure['wwn_security_state']
 
