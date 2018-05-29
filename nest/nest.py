@@ -189,7 +189,6 @@ class NestBase(object):
         path = '/%s/%s' % (what, self._serial)
 
         response = self._nest_api._put(path=path, data=data)
-        # self._nest_api._bust_cache()
 
         return response
 
@@ -1567,7 +1566,6 @@ class Structure(NestBase):
 
 class Nest(object):
     def __init__(self, username=None, password=None,
-                 # cache_ttl=270,
                  user_agent=None,
                  access_token=None, access_token_cache_file=None,
                  local_time=False,
@@ -1585,8 +1583,6 @@ class Nest(object):
         self._event_thread = None
         self._update_event = threading.Event()
         self._queue_lock = threading.Lock()
-#        self._cache_ttl = cache_ttl
-#        self._cache = (None, 0)
 
         if local_time:
             raise ValueError("local_time no longer supported")
@@ -1631,7 +1627,6 @@ class Nest(object):
     @property
     def client_version_out_of_date(self):
         if self._product_version is not None:
-            # self._bust_cache()
             try:
                 return self.client_version < self._product_version
             # an error means they need to authorize anyways
@@ -1830,11 +1825,6 @@ class Nest(object):
     @property
     def _devices(self):
         return self._status[DEVICES]
-
-    '''
-    def _bust_cache(self):
-        self._cache = (None, 0)
-    '''
 
     @property
     def devices(self):
